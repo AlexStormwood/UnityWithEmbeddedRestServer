@@ -379,8 +379,9 @@ MonoBehaviour:
   internalIPs: []
   portChooseMethod: 1
   portRange: f8a70000f9a70000faa70000fba70000fca70000
-  defaultPort: 43000
-  serverPort: 43000
+  incrementRangeLimit: 1000
+  defaultPort: 42000
+  serverPort: 42000
   _keepRunning: 1
 --- !u!4 &2035352333
 Transform:

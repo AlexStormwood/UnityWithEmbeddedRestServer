@@ -10,7 +10,7 @@ This project showcases a way to allow Unity-based applications to communicate da
 - Game data needs to be structured in a way that our server can easily grab it.
 - Examples provided of how other apps can make requests to that server.
 
-This page contains some of the key info, but please check out the wiki for more information.
+This page contains some of the key info, but please check out the Documentation directory for more information.
 
 
 

@@ -17,7 +17,8 @@ using System.Net.NetworkInformation;
 /// </summary>
 public enum PortChooseMethod
 {
-    StrictOne,
+    DefaultOrError,
+    DefaultOrIncrement,
     WithinRange,
     Random
 }
@@ -44,6 +45,11 @@ public class EmbeddedRestAPI : MonoBehaviour
     /// This array will be used by the "WithinRange" port-choosing method to determine an available port.
     /// </summary>
     public int[] portRange;
+
+    /// <summary>
+    /// If the "PortChooseMethod.DefaultOrIncrement" is used, this determines how many increments on the default port will be attempted before giving up. A single device has a lot of ports - if you're not sure what you should set this to, leave it as-is.
+    /// </summary>
+    public int incrementRangeLimit = 1000;
 
     /// <summary>
     /// This is the port used by the server when the "StrictOne" port-choosing method is selected.
@@ -105,7 +111,7 @@ public class EmbeddedRestAPI : MonoBehaviour
             // Determine the server's port based on a selected choosing method.
             switch (portChooseMethod)
             {
-                case PortChooseMethod.StrictOne:
+                case PortChooseMethod.DefaultOrError:
                     serverPort = defaultPort;
                     break;
                 case PortChooseMethod.WithinRange:
@@ -114,8 +120,10 @@ public class EmbeddedRestAPI : MonoBehaviour
                 case PortChooseMethod.Random:
                     serverPort = GetAvailablePort();
                     break;
+                case PortChooseMethod.DefaultOrIncrement:
+                    goto default;
                 default:
-                    serverPort = defaultPort;
+                    serverPort = GetPortWithinIncrementRange(defaultPort, incrementRangeLimit);
                     break;
             }
 
@@ -387,6 +395,22 @@ public class EmbeddedRestAPI : MonoBehaviour
         }
 
         return firstAvailablePort;
+    }
+
+    /// <summary>
+    /// Figures out which ports are available within a range, based on an incrementing list of wanted ports. For example, if you call this function with a startingPort of 3000 and rangeSize of 5, possible returns could be 3000, 3001, 3002, 3003, 3004. The first available port from that range will be returned.
+    /// </summary>
+    /// <param name="startingPort">The port that you want the range to start from.</param>
+    /// <param name="rangeSize">How many incrementations of the startingPort should be checked.</param>
+    /// <returns>An available port within the specified rangeSize and based on the startingPort.</returns>
+    public static int GetPortWithinIncrementRange(int startingPort, int rangeSize)
+    {
+        int[] portIncrementRange = new int[rangeSize];
+        for (int i = 0; i < rangeSize; i++)
+        {
+            portIncrementRange[i] = startingPort + i;
+        }
+        return GetPortWithinRange(portIncrementRange);
     }
 
 
