@@ -11,8 +11,8 @@ This project showcases a way to allow Unity-based applications to communicate da
 - Examples provided of how other apps can make requests to that server.
 
 This page contains some of the key info, but please check out the Documentation directory for more information.
-* [Project Overview page](./Documentation/ProjectOverview.md)
-* [Server Functionality page](./Documentation/ServerFunctionality.md)
+* [Project Overview page](ProjectOverview.md)
+* [Server Functionality page](ServerFunctionality.md)
 
 
 
