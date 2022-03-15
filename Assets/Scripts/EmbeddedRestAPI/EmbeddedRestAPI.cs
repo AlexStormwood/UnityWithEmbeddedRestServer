@@ -33,32 +33,38 @@ public class EmbeddedRestAPI : MonoBehaviour
     /// <summary>
     /// Array of IP addresses that can represent this device within the networks that it's connected to.
     /// </summary>
+    [Tooltip("For LAN or WLAN networks; the addresses that this device is connected to. There may be multiple addresses, as a device can be connected to multiple networks at once.")]
     public string[] internalIPs;
 
     /// <summary>
     /// The method the server will use to determine its port on server startup.
     /// </summary>
+    [Tooltip("Controls how the API server's port will be chosen.")]
     public PortChooseMethod portChooseMethod = PortChooseMethod.WithinRange;
 
     /// <summary>
     /// The range of ports you want the server to pick a port from. Ports in use by other applications will be ignored by the server's port-choosing at server startup, so this array should cover a safe variety of ports. This array should absolutely be shared in your game documentation / modding documentation so that other apps know which ports to communicate with.
     /// This array will be used by the "WithinRange" port-choosing method to determine an available port.
     /// </summary>
+    [Tooltip("The pool of possible ports that the API server may use, if the port-choosing method is WithinRange.")]
     public int[] portRange;
 
     /// <summary>
     /// If the "PortChooseMethod.DefaultOrIncrement" is used, this determines how many increments on the default port will be attempted before giving up. A single device has a lot of ports - if you're not sure what you should set this to, leave it as-is.
     /// </summary>
+    [Tooltip("How many additional ports should be tried if the port-choosing method is DefaultOrIncrement and the default port is unavailable.")]
     public int incrementRangeLimit = 1000;
 
     /// <summary>
     /// This is the port used by the server when the "StrictOne" port-choosing method is selected.
     /// </summary>
+    [Tooltip("The port used if a port selection method fails, or if the port-choosing method is left to a default-using method.")]
     public int defaultPort = 43000;
 
     /// <summary>
     /// Port for the API to use. Should be overridden at runtime, but defaults are nice.
     /// </summary>
+    [Tooltip("The port currently used by the API server.")]
     public int serverPort = 43000;
 
     /// <summary>
@@ -69,6 +75,7 @@ public class EmbeddedRestAPI : MonoBehaviour
     /// <summary>
     /// Flag for the API to know whether it should be running or not. Can be affected by multiple threads simultaneously since it's volatile!
     /// </summary>
+    [Tooltip("A flag to control whether or not the server should be active & listening for traffic right now.")]
     public volatile bool _keepRunning = true;
 
     /// <summary>
@@ -81,9 +88,11 @@ public class EmbeddedRestAPI : MonoBehaviour
     /// </summary>
     public void StartWebServer()
     {
-        if (_mainServerLoop != null && !_mainServerLoop.IsCompleted) return; // Server already running
+        // Server already running, don't run another one.
+        if (_mainServerLoop != null && !_mainServerLoop.IsCompleted) return;
 
-        _mainServerLoop = MainLoop();
+        // Start the server and store the variable that keeps a reference to it.
+        _mainServerLoop = MainLoop(); 
     }
 
     /// <summary>
@@ -200,7 +209,7 @@ public class EmbeddedRestAPI : MonoBehaviour
 
             try
             {
-                // On larger routes like "localhost:port/commands/settimeofday"
+                // Help establish data for our control flow and initialize the server response content.
                 bool handled = false;
                 string responseBody = "";
 
@@ -209,6 +218,7 @@ public class EmbeddedRestAPI : MonoBehaviour
                 // get the "top"-level router by substringing the absolute path.
                 // AbsolutePath begins with a forward slash,
                 // then our top-level route ends with a second forward slash.
+                // So, a bit of cleaning is required on the path while we work with it.
 
                 // Remove leading forward slash
                 string highLevelRoute = context.Request.Url.AbsolutePath.Substring(1);
